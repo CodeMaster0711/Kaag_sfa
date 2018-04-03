@@ -1,0 +1,19 @@
+<ul class="btn_group">
+          <li :class="{ cr: type === 'plan-result', blur: period === 'month' }">
+            <router-link
+              :to="{ name: 'schedules-calendar', query: { type: 'plan-result', period: period, holiday: holiday } }"
+              @click.prevent.stop="jumpPlanResult">
+              予定結果
+            </router-link>
+          </li>
+          <li :class="{ cr: type === 'plan' }">
+            <router-link :to="{ name: 'schedules-calendar', query: { type: 'plan', period: period, holiday: holiday } }">
+              予定
+            </router-link>
+          </li>
+          <li :class="{ cr: type === 'result' }">
+            <router-link :to="{ name: 'schedules-calendar', query: { type: 'result', period: period, holiday: holiday } }">
+              結果
+            </router-link>
+          </li>
+        </ul>

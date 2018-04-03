@@ -1,0 +1,427 @@
+API Overview
+
+<Index>
+1. Overview
+2. Request destination
+3. Request format
+4. Sample
+5. Flow of server processing
+6. List of functionalities
+7. Login processing
+8. Acquisition of master data
+9. Item data acqusition
+
+1. Overview
+API is RestAPI
+Format is JSON, type is all String
+date format is YYYYMMDD
+
+2. Request destination
+
+in API's contact address, there are single and multi
+single: http://dev.aioindi-sfa.jp/adsfa2tablet/tabletindex.php
+multi: http://dev.aioindi-sfa.jp/adsfa2tablet/tabletindexMulti.php
+
+We can acquire multiple results at the same time by handing over parameter whick should be requested to single to multi as array send ObjList
+
+3. Request Format
+--Parameter
+flid	return the value the client set without any change
+md	processing number
+ss	session value
+uid	employee code
+obj	input value
+
+SAMPLE
+tabletindex.php_(シングル)
+{
+    "flid": "",
+    "md": "0",								
+    "ss": "",
+    "uid": "",
+    "obj": {
+        "devVersion": "1",
+        "majorVersion": "4",
+        "minorVersion": "2",
+        "passWd": "",
+        "revision": "0",
+        "userId": ""
+    }
+}
+tabletindexMulti.php_(マルチ)
+{
+    "sendObjList": [
+        {
+            "flid": "",
+            "md": "300065",
+            "obj": {},
+            "ss": "0cce8a6dfee4438640dd84faaf38268a",
+            "uid": "TEST001"
+        },
+        {
+            "flid": "",
+            "md": "200001",
+            "obj": {},
+            "ss": "0cce8a6dfee4438640dd84faaf38268a",
+            "uid": "TEST001"
+        }, ...
+    ]
+}
+
+
+シングル：single
+マルチ: multi
+
+
+5. Flow of server processing
+at server processing flow side, processing is excuted referring to md(processing number) value
+processing number "0"
+
+認証機能です。ObjにuserId、passWd、majorVersion、minorVersionをセットして、認証が通ればsessionIdを返却します
+
+processing number "200100"
+2This is 2nd authentication function.please deploy userId、passWd、majorVersion、minorVersion and sessionId got at processing number 0 to Obj
+If you do not excute this processing, sessionid cannot be valid, afterward processing gets authentication error
+
+Other Processing Numbe
+Parameters    description
+uid	configure employee code when entered at login
+md	configure processing number
+ss	please set sessionid when got at processing number 0
+obj	configure the input in the server
+
+atuhenticatio is done with uid,ss value, if authentication is ok, please process md
+please set majorVersion=4、minorVersion=2 
+
+
+7. Login processing
+tabletindex.php_(Request)
+{
+  "flid": "",
+  "md": "0",
+  "ss": "",
+  "uid": "RABI001",
+  "obj": {
+    "devVersion": "1",
+    "majorVersion": "4",
+    "minorVersion": "2",
+    "revision": "0",
+    "userId": "RABI001",
+    "passWd": "RABI001"
+  }
+}
+
+
+8. Acquisition of master data
+on login, call up API below, then acquire a set of master data
+
+tabletindexMulti.php_(Request)
+{
+  "sendObjList": [
+    {
+      "md": "1",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    },
+    {
+      "md": "300065",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    },
+    {
+      "md": "200001",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    },
+    {
+      "md": "300001",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    },
+    {
+      "md": "300400",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    },
+    {
+      "md": "300415",
+      "ss": "4ed3d05818a8f94a80c54242cf80f07e",
+      "uid": "TEST010",
+      "flid": "",
+      "obj": {}
+    }
+  ]
+}
+
+9. Item data acqusition
+
+Property                description
+obj.target_type	set object number. New object number shall be 1
+obj.renge	              configure acquisition renge. 2:branch, 3: department,4 person
+obj.renge_code	configure the value got at renge. Ex. Branch code, dept. code, employee number
+tabletindexMulti.php_(Request)
+{
+    "flid": "",
+    "md": "300100",
+    "obj": {
+        "renge": "4",
+        "renge_code": "TEST001",
+        "target_type": "1"
+    },
+    "ss": "2fbcf064f926c64c5c4b57628f4f940a",
+    "uid": "TEST001"
+}
+tabletindexMulti.php_(Response)
+{
+    "_explicitType": "Resultmap",
+    "code": 0,
+    "flid": "",
+    "mess": "",
+    "mtid": "300100",
+    "value": {
+        "key": null,
+        "value": [
+            {
+                "key": "T00",
+                "value": [
+                    {
+                        "key": "T0001",
+                        "value": [
+                            {
+                                "key": "TEST001",
+                                "value": [
+                                    {
+                                        "address": null,
+                                        "age": "",
+                                        "agency_cd": "",
+                                        "agency_name": "",
+                                        "birth_date": null,
+                                        "biztype": null,
+                                        "bushiten_cd": "T00",
+                                        "channel": "1",
+                                        "comments": "",
+                                        "company_cd": null,
+                                        "company_name": null,
+                                        "company_unity_cd": null,
+                                        "contractedIns": null,
+                                        "create_date": "20150401000000",
+                                        "create_id": "TEST001",
+                                        "delf": 0,
+                                        "dropf": 0,
+                                        "employees": null,
+                                        "exinsurance": "1000",
+                                        "exinsurance2": null,
+                                        "exinsurance3": null,
+                                        "expect": "b",
+                                        "expect2": null,
+                                        "expect_insurance": null,
+                                        "fleet_car_num": null,
+                                        "force_update": null,
+                                        "hojin_kojin": null,
+                                        "insurance_company": "45",
+                                        "item": null,
+                                        "jutenf": 0,
+                                        "kaigof": null,
+                                        "kana": null,
+                                        "kashisya_cd": "T0001",
+                                        "kashisya_nm": "テスト課支社A",
+                                        "kesan_date": null,
+                                        "kihon_s": null,
+                                        "koryaku_date": "20150401000000",
+                                        "last_katsudou_comments": "",
+                                        "last_katsudou_date": "",
+                                        "letterf": null,
+                                        "name": "テストユーザー1",
+                                        "nissaymiddle": null,
+                                        "nli_responder_nm": null,
+                                        "nli_shisya_cd": null,
+                                        "nli_shisya_nm": null,
+                                        "original1": "",
+                                        "original1_key": "",
+                                        "original1_label": "",
+                                        "original2": "",
+                                        "original2_key": "",
+                                        "original2_label": "",
+                                        "original3": "",
+                                        "original3_key": "",
+                                        "original3_label": "",
+                                        "original4": "",
+                                        "original4_key": "",
+                                        "original4_label": "",
+                                        "original5": "",
+                                        "original5_key": "",
+                                        "original5_label": "",
+                                        "original6": "",
+                                        "original6_key": "",
+                                        "original6_label": "",
+                                        "potential_insurance": "3",
+                                        "pref_code": null,
+                                        "previous_job": "",
+                                        "products": null,
+                                        "progress1": null,
+                                        "progress10": null,
+                                        "progress2": null,
+                                        "progress3": null,
+                                        "progress4": null,
+                                        "progress5": null,
+                                        "progress6": null,
+                                        "progress7": null,
+                                        "progress8": null,
+                                        "progress9": null,
+                                        "reg_syain_nm": "",
+                                        "reg_syain_no": "",
+                                        "registf": "",
+                                        "renge": null,
+                                        "renge_code": null,
+                                        "resist_bushiten_cd": "T00",
+                                        "resist_kashisya_cd": "T0001",
+                                        "route": null,
+                                        "scenario": null,
+                                        "segmentf": "",
+                                        "seiyaku_check": null,
+                                        "seiyaku_date": null,
+                                        "seiyaku_insurance": null,
+                                        "shinkaku": null,
+                                        "shonin": null,
+                                        "starsf": null,
+                                        "status": "0",
+                                        "syain_id": "TEST001",
+                                        "target_id": 304445,
+                                        "target_nm": "めでる",
+                                        "target_type": null,
+                                        "tcf": null,
+                                        "tel": null,
+                                        "topf": "4",
+                                        "tsComments": null,
+                                        "tsComments2": "",
+                                        "tsStatus1Date": null,
+                                        "tsStatus2Date": null,
+                                        "tsf": null,
+                                        "type": 1,
+                                        "update_date": "20161010224156",
+                                        "update_id": "TEST001",
+                                        "year": "2015"
+                                    },
+                                    {
+                                        "address": null,
+                                        "age": "",
+                                        "agency_cd": "",
+                                        "agency_name": "",
+                                        "birth_date": null,
+                                        "biztype": null,
+                                        "bushiten_cd": "T00",
+                                        "channel": "3",
+                                        "comments": "",
+                                        "company_cd": null,
+                                        "company_name": null,
+                                        "company_unity_cd": null,
+                                        "contractedIns": null,
+                                        "create_date": "20150630220708",
+                                        "create_id": "TEST001",
+                                        "delf": 0,
+                                        "dropf": 0,
+                                        "employees": null,
+                                        "exinsurance": "",
+                                        "exinsurance2": null,
+                                        "exinsurance3": null,
+                                        "expect": "c",
+                                        "expect2": null,
+                                        "expect_insurance": null,
+                                        "fleet_car_num": null,
+                                        "force_update": null,
+                                        "hojin_kojin": null,
+                                        "insurance_company": "",
+                                        "item": null,
+                                        "jutenf": 0,
+                                        "kaigof": 0,
+                                        "kana": null,
+                                        "kashisya_cd": "T0001",
+                                        "kashisya_nm": "テスト課支社A",
+                                        "kesan_date": null,
+                                        "kihon_s": null,
+                                        "koryaku_date": "20150801000000",
+                                        "last_katsudou_comments": "",
+                                        "last_katsudou_date": "",
+                                        "letterf": null,
+                                        "name": "テストユーザー1",
+                                        "nissaymiddle": null,
+                                        "nli_responder_nm": null,
+                                        "nli_shisya_cd": null,
+                                        "nli_shisya_nm": null,
+                                        "original1": "",
+                                        "original1_key": "",
+                                        "original1_label": "",
+                                        "original2": "",
+                                        "original2_key": "",
+                                        "original2_label": "",
+                                        "original3": "",
+                                        "original3_key": "",
+                                        "original3_label": "",
+                                        "original4": "",
+                                        "original4_key": "",
+                                        "original4_label": "",
+                                        "original5": "",
+                                        "original5_key": "",
+                                        "original5_label": "",
+                                        "original6": "",
+                                        "original6_key": "",
+                                        "original6_label": "",
+                                        "potential_insurance": "",
+                                        "pref_code": null,
+                                        "previous_job": "",
+                                        "products": null,
+                                        "progress1": null,
+                                        "progress10": null,
+                                        "progress2": null,
+                                        "progress3": null,
+                                        "progress4": null,
+                                        "progress5": null,
+                                        "progress6": null,
+                                        "progress7": null,
+                                        "progress8": null,
+                                        "progress9": null,
+                                        "reg_syain_nm": "",
+                                        "reg_syain_no": "",
+                                        "registf": "",
+                                        "renge": null,
+                                        "renge_code": null,
+                                        "resist_bushiten_cd": "T00",
+                                        "resist_kashisya_cd": "T0001",
+                                        "route": null,
+                                        "scenario": null,
+                                        "segmentf": "3",
+                                        "seiyaku_check": null,
+                                        "seiyaku_date": null,
+                                        "seiyaku_insurance": null,
+                                        "shinkaku": null,
+                                        "shonin": 0,
+                                        "starsf": null,
+                                        "status": "",
+                                        "syain_id": "TEST001",
+                                        "target_id": 319530,
+                                        "target_nm": "TEST",
+                                        "target_type": null,
+                                        "tcf": null,
+                                        "tel": null,
+                                        "topf": "",
+                                        "tsComments": null,
+                                        "tsComments2": "",
+                                        "tsStatus1Date": null,
+                                        "tsStatus2Date": null,
+                                        "tsf": null,
+                                        "type": 1,
+                                        "update_date": "20151007205135",
+                                        "update_id": "TEST001",
+                                        "year": "2015"
+                                    }, ...
+
